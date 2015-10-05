@@ -29,6 +29,7 @@ h1{
 	border: 1px solid #000;
 /*	background: url(../img/kyoushitsu.jpeg) center center no-repeat;*/
 	background: #ddd center center no-repeat;
+    
 	background-size: cover;
 }
 #chatArea {
