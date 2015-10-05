@@ -17,6 +17,7 @@ body {
 body {
 	margin-top:auto!important;
 	padding:0!important;
+	color: #bbb;
 }
 h1{
 	font-size:300%;
@@ -70,7 +71,7 @@ h1{
 	background-color: #aaf;
 }
 
-#testDiv {
+#test {
 	color: #fff;
 	position: fixed;
 }

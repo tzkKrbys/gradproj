@@ -370,14 +370,23 @@ $(document).ready(function(){
 		function Draw(){
 				
 			if( countFrames % 30 == 0 ) {//30フレーム毎に実行
+				$('#testDiv2>span').html(myIcon.talkingNodes.length);
+				$('#testDiv3>span').html(myIcon.uniqueId);
+				if(myIcon.talkingNodes.length){
+					console.log(myIcon.talkingNodes[0]);
+					$('#testDiv4>span').html(myIcon.talkingNodes[0].uniqueId);
+					console.log(myIcon.talkingNodes);
+				} else {
+					$('#testDiv4>span').html("");
+				}
 				if(myIcon && peer && myStream) {
 					if(icons.length > 0) {
-						icons.forEach(function(icon) {
+						icons.forEach(function(icon, i, icons) {
 							if(icon.peerId){
 								var diffX = icon.PosX - myIcon.PosX;
 								var diffY = icon.PosY - myIcon.PosY;
 								if((diffX * diffX) + (diffY * diffY) < 140 * 140){//距離判定
-									if(myIcon.talkingNodes.length < 1 && icon.talkingNodes < 1){
+									if(myIcon.talkingNodes.length < 1 && icon.talkingNodes.length < 1){
 										if(myIcon.talkingNodes.length) {
 											myIcon.talkingNodes.forEach(function(node, i, arr) {
 												if(node.uniqueId != icon.uniqueId) {
