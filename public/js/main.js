@@ -17,7 +17,6 @@ var socket;
 var myUniqueId;
 
 
-
 $(document).ready(function(){
     alert('done!');
 	console.log(peer);
