@@ -328,18 +328,18 @@ $(document).ready(function(){
 		socket.on('emit_from_server_peerCallConnected', function(data) {
 			icons.forEach(function (icon, i, icons) {
 				if(icon.socketId == data.socketId) {
-					if(!icons[i].talkingNodesIds.length) {
+					if(!icons[i].talkingNodesSocketIds.length) {
 						console.log(data);
-						console.log(icons[i].talkingNodesIds);
-						icons[i].talkingNodesIds.push(data.talkingNodesIds);
-						console.log(icons[i].talkingNodesIds);
+						console.log(icons[i].talkingNodesSocketIds);
+						icons[i].talkingNodesSocketIds.push(data.talkingNodesSocketId);
+						console.log(icons[i].talkingNodesSocketIds);
 					}else{
-						icons[i].talkingNodesIds.forEach(function(id) {
+						icons[i].talkingNodesSocketIds.forEach(function(id) {
 							if(id != data.socketId) return;
 							console.log(data);
-							console.log(icons[i].talkingNodesIds);
-							icons[i].talkingNodesIds.push(data.talkingNodesIds);
-							console.log(data.talkingNodesIds);
+							console.log(icons[i].talkingNodesSocketIds);
+							icons[i].talkingNodesSocketIds.push(data.talkingNodesSocketId);
+							console.log(data.talkingNodesSocketId);
 						});
 					}
 				}
@@ -348,13 +348,13 @@ $(document).ready(function(){
 		socket.on('emit_from_server_peerCallDisconnected', function(data) {
 			icons.forEach(function (icon, i, icons) {
 				if(icon.socketId == data.socketId) {
-					if(icons[i].talkingNodesIds.length) {
-						icons[i].talkingNodesIds.forEach(function(id,j,arr) {
+					if(icons[i].talkingNodesSocketIds.length) {
+						icons[i].talkingNodesSocketIds.forEach(function(id,j,arr) {
 							console.log(id);
-							console.log(data.talkingNodesIds);
+							console.log(data.talkingNodesSocketId);
 							console.log(data.socketId);
 							console.log(arr);
-							if(id == data.talkingNodesIds) {
+							if(id == data.talkingNodesSocketId) {
 								arr.splice(j,1);
 								console.log(arr);
 							}
@@ -385,34 +385,54 @@ $(document).ready(function(){
 							if(icon.peerId){
 								var diffX = icon.PosX - myIcon.PosX;
 								var diffY = icon.PosY - myIcon.PosY;
-								if((diffX * diffX) + (diffY * diffY) < 140 * 140){//距離判定
-									if(myIcon.talkingNodes.length < 1 && icon.talkingNodes.length < 1){
-										if(myIcon.talkingNodes.length) {
-											myIcon.talkingNodes.forEach(function(node, i, arr) {
-												if(node.socketId != icon.socketId) {
-													return;
-												} else {//接続する
-													var call = peer.call(icon.peerId, myStream);
-													call.on('stream', receiveOthersStream);
-													myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
-													socket.emit('emit_from_client_peerCallConnected', icon.socketId);
-												}
-											});
-										} else {//接続する
-											var call = peer.call(icon.peerId, myStream);
-											call.on('stream', receiveOthersStream);
-											myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
-											socket.emit('emit_from_client_peerCallConnected', icon.socketId);
+								if((diffX * diffX) + (diffY * diffY) < 140 * 140){//一定距離以内なら
+									console.log(icon.talkingNodesSocketIds);
+									if(icon.talkingNodesSocketIds.length < 1){//iconが話せる
+										if(myIcon.talkingNodes.length < 1){//myIconが話せる
+											if(myIcon.talkingNodes.length) {//myIcon誰かと話してたら
+												myIcon.talkingNodes.forEach(function(talkingnode, i, arr) {
+													if(talkingnode.socketId != icon.socketId) {//話しているのがその相手だったら
+														return;//何もしない
+													} else {//話している人でなければ
+														//接続する
+														var call = peer.call(icon.peerId, myStream);
+														call.on('stream', receiveOthersStream);
+														myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
+														socket.emit('emit_from_client_peerCallConnected', icon.socketId);
+													}
+												});
+											} else {//myIconが誰かと話してなければ
+												//接続する
+												var call = peer.call(icon.peerId, myStream);
+												call.on('stream', receiveOthersStream);
+												myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
+												socket.emit('emit_from_client_peerCallConnected', icon.socketId);
+											}
+										}
+									} else if (icon.talkingNodesSocketIds.length > 0) {//iconが話せない場合
+										if(myIcon.talkingNodes.length < 1){//myIconが話せる場合
+											if ( icon.talkingNodesSocketIds == myIcon.socketId ) {
+												console.log('相手は話せます');
+												//接続する
+												var call = peer.call(icon.peerId, myStream);
+												call.on('stream', receiveOthersStream);
+												myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
+												socket.emit('emit_from_client_peerCallConnected', icon.socketId);
+											} else {
+												console.log('相手は話せません');
+											}
 										}
 									}
-								}else{
-									myIcon.talkingNodes.forEach(function(node, i, arr) {
-										if(node.socketId == icon.socketId) {//切断する
-											node.call.close();
-											arr.splice(i,1);
-											socket.emit('emit_from_client_peerCallDisconnected', icon.socketId);
-										}
-									});
+								} else {//一定距離以外なら
+									if (myIcon.talkingNodes.length > 0) {
+										myIcon.talkingNodes.forEach(function(node, i, arr) {
+											if(node.socketId == icon.socketId) {//切断する
+												node.call.close();
+												arr.splice(i,1);
+												socket.emit('emit_from_client_peerCallDisconnected', icon.socketId);
+											}
+										});
+									}
 								}
 							}
 						});
@@ -452,8 +472,8 @@ $(document).ready(function(){
 				icon.DrawChat(); //myIconオブジェクトの描画メソッド呼出(CanvasRenderingContext2Dオブジェクト,str)
 				if(icon.countVoice){
 					context.globalAlpha = icon.countVoice * 3 / 1000;
-					console.log(icon.talkingNodesIds.length);
-					if(icon.talkingNodesIds.length > 0) {
+					console.log(icon.talkingNodesSocketIds.length);
+					if(icon.talkingNodesSocketIds.length > 0) {
 						context.fillStyle = "#0f0";
 					}else{
 						context.fillStyle = "#ff0";

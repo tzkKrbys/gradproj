@@ -140,14 +140,14 @@ io.sockets.on('connection', function (socket) {
 	});
 	
 	
-	socket.on('emit_from_client_peerCallConnected', function(data) {
+	socket.on('emit_from_client_peerCallConnected', function(data) {//dataはicon.socketId
 		console.log(data);
-		socket.broadcast.emit('emit_from_server_peerCallConnected', {socketId: socket.id, talkingNodesIds: data});
+		socket.broadcast.emit('emit_from_server_peerCallConnected', {socketId: socket.id, talkingNodesSocketId: data});
 	});
 
-	socket.on('emit_from_client_peerCallDisconnected', function(data) {
+	socket.on('emit_from_client_peerCallDisconnected', function(data) {//dataはicon.socketId
 		console.log(data);
-		socket.broadcast.emit('emit_from_server_peerCallDisconnected', {socketId: socket.id, talkingNodesIds: data});
+		socket.broadcast.emit('emit_from_server_peerCallDisconnected', {socketId: socket.id, talkingNodesSocketId: data});
 	});
 	
 	socket.on('disconnect', function() {

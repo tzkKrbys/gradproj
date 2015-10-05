@@ -15,8 +15,8 @@ function MyIcon(){
 	this.countVoice;//発言した文字が消えるまでのカウントダウン
 	this.iconImg;//アイコン画像用
 	this.peerId;//skywayのpeer.id
-	this.talkingNodes = [];
-	this.talkingNodesIds = [];
+	this.talkingNodes = [];//{socketId: icon.socketId, call: call }
+	this.talkingNodesSocketIds = [];
 }
 
 /*初期化関数*/
@@ -174,7 +174,7 @@ MyIcon.prototype.mousePosCheck = function (event) {
 //	this.countVoice;//発言した文字が消えるまでのカウントダウン
 //	this.iconImg;//アイコン画像用
 //	this.peerId;//skywayのpeer.id
-//	this.talkingNodesIds = [];
+//	this.talkingNodesSocketIds = [];
 //}
 //
 ///*初期化関数*/
