@@ -70,5 +70,8 @@ h1{
 	background-color: #aaf;
 }
 
-
+#testDiv {
+	color: #fff;
+	position: fixed;
+}
 

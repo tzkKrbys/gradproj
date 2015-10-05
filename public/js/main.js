@@ -10,7 +10,7 @@ var gBUpPush = false;		// up
 var gBDownPush = false;	// down
 var myIcon;
 //var otherIcon;
-var icons = [];
+var icons = [];//他のicon用配列
 
 var socket;
 
@@ -18,7 +18,6 @@ var myUniqueId;
 
 
 $(document).ready(function(){
-    alert('done!');
 	console.log(peer);
 	canvas = document.getElementById('canvas');
 	context = canvas.getContext('2d');
@@ -122,10 +121,12 @@ $(document).ready(function(){
 //-------------------------------------------socket.io---//
 	socket.on('connect', function() {
 		socket.on('emit_fron_server_sendIcons', function(data){
-			data.forEach(function(icon) {
+			data.icons.forEach(function(icon) {
 				if (!icon) return;
 				icons.push(MyIcon.fromObject( icon,canvasWidth/2, canvasHeight/2 ));
 			});
+			$('#testDiv').html('現在の人数：' + data.numOfIcon);
+			console.log(data.numOfIcon);
 		});
 		// クラス生成
 		myIcon.uniqueId = socket.id;
@@ -134,7 +135,9 @@ $(document).ready(function(){
 
 		socket.on('emit_from_server_join', function(data) {
 			console.log(data);
-			icons.push(MyIcon.fromObject( data, canvasWidth/2, canvasHeight/2  ));
+			icons.push(MyIcon.fromObject( data.icon, canvasWidth/2, canvasHeight/2  ));
+			$('#testDiv').html('現在の人数：' + data.numOfIcon);
+			console.log(data.numOfIcon);
 		});
 
 		
@@ -145,10 +148,11 @@ $(document).ready(function(){
 //			}
 //		});
 		
-		socket.on('emit_from_server_iconRemove', function(data){
+		socket.on('emit_from_server_iconRemove', function(data){//{ uniqueId: socket.id, numOfIcon: io.sockets.sockets.length}
 			icons.forEach(function(icon, i, icons) {
-				if(icon.uniqueId == data) icons.splice(i, 1);
+				if(icon.uniqueId == data.uniqueId) icons.splice(i, 1);
 			});
+			$('#testDiv').html('現在の人数：' + data.numOfIcon);
 		});
 		
 		socket.on('emit_from_server_sendMsg', function(data) {
@@ -365,7 +369,7 @@ $(document).ready(function(){
 
 		function Draw(){
 				
-			if( countFrames % 30 == 0 ) {
+			if( countFrames % 30 == 0 ) {//30フレーム毎に実行
 				if(myIcon && peer && myStream) {
 					if(icons.length > 0) {
 						icons.forEach(function(icon) {

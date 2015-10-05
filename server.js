@@ -81,10 +81,9 @@ io.set('log level', 1);
 io.sockets.on('connection', function (socket) {
 	
 	//io.sockets.socketsは配列になっている
-	socket.emit('emit_fron_server_sendIcons', io.sockets.sockets.map(function(e) {
+	socket.emit('emit_fron_server_sendIcons', {icons: io.sockets.sockets.map(function(e) {
 		return e.icon;
-		
-	}));
+	}), numOfIcon: io.sockets.sockets.length});
 
 
 	socket.hoge = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
@@ -114,11 +113,13 @@ io.sockets.on('connection', function (socket) {
 		console.log(data);
 	});
 
-
-	socket.on('emit_from_client_join', function(data) {
+//----------------------------------------------------アクセス時
+	//voiceChat.jsに記述
+	socket.on('emit_from_client_join', function(data) {//dataはmyIcon
 		socket.icon = data;
-		socket.broadcast.emit('emit_from_server_join', data);
+		socket.broadcast.emit('emit_from_server_join', {icon: data, numOfIcon: io.sockets.sockets.length});
 		console.log('きてますよ〜');
+		console.log('人数：' + io.sockets.sockets.length);
 		console.log(data);
 	});
 
@@ -150,10 +151,10 @@ io.sockets.on('connection', function (socket) {
 	});
 	
 	socket.on('disconnect', function() {
-		console.log(socket.id);
-		console.log('disconnect');
+		console.log('disconnect : ' + socket.id);
 		//サーバー側のiconはsocket.iconに格納されていて、disconnect時には勝手に消える為、削除処理不要
-		socket.broadcast.emit('emit_from_server_iconRemove', socket.id);
+		socket.broadcast.emit('emit_from_server_iconRemove', { uniqueId: socket.id, numOfIcon: io.sockets.sockets.length});
+		
 	});
 });//---end---io.sockets.on('connection'
 
