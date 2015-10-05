@@ -1,0 +1,29 @@
+{
+  "name": "gradproj",
+  "version": "1.0.0",
+  "description": "#これは個人的に作ってるやつです。",
+  "main": "server.js",
+  "dependencies": {
+    "mime": "^1.3.4",
+    "socket.io": "^1.3.6"
+  },
+"engines": {
+	"node": "0.12.7",
+	"npm": "2.11.3"
+},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tzkKrbys/GraduationProject.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tzkKrbys/GraduationProject/issues"
+  },
+  "homepage": "https://github.com/tzkKrbys/GraduationProject#readme"
+}
