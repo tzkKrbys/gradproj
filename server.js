@@ -127,33 +127,33 @@ io.sockets.on('connection', function (socket) {
 	socket.on('emit_from_client_iconPosChanged', function(data) {
 		socket.icon.PosX = data.PosX;
 		socket.icon.PosY = data.PosY;
-		socket.broadcast.emit('emit_from_server_iconPosChanged', {uniqueId: socket.icon.uniqueId, PosX: socket.icon.PosX, PosY: socket.icon.PosY});
+		socket.broadcast.emit('emit_from_server_iconPosChanged', {socketId: socket.icon.socketId, PosX: socket.icon.PosX, PosY: socket.icon.PosY});
 	});
 	
 	socket.on('emit_from_client_sendMsg', function(data) {
-		socket.broadcast.emit('emit_from_server_sendMsg',{ uniqueId: socket.id, str: data.str, chatShowCount: data.chatShowCount});
+		socket.broadcast.emit('emit_from_server_sendMsg',{ socketId: socket.id, str: data.str, chatShowCount: data.chatShowCount});
 	});
 	
 	
 	socket.on('emit_from_client_voicePU', function(data) {
-		socket.broadcast.emit('emit_from_server_voicePU', { uniqueId: socket.id ,countVoice: data});
+		socket.broadcast.emit('emit_from_server_voicePU', { socketId: socket.id ,countVoice: data});
 	});
 	
 	
 	socket.on('emit_from_client_peerCallConnected', function(data) {
 		console.log(data);
-		socket.broadcast.emit('emit_from_server_peerCallConnected', {uniqueId: socket.id, talkingNodesIds: data});
+		socket.broadcast.emit('emit_from_server_peerCallConnected', {socketId: socket.id, talkingNodesIds: data});
 	});
 
 	socket.on('emit_from_client_peerCallDisconnected', function(data) {
 		console.log(data);
-		socket.broadcast.emit('emit_from_server_peerCallDisconnected', {uniqueId: socket.id, talkingNodesIds: data});
+		socket.broadcast.emit('emit_from_server_peerCallDisconnected', {socketId: socket.id, talkingNodesIds: data});
 	});
 	
 	socket.on('disconnect', function() {
 		console.log('disconnect : ' + socket.id);
 		//サーバー側のiconはsocket.iconに格納されていて、disconnect時には勝手に消える為、削除処理不要
-		socket.broadcast.emit('emit_from_server_iconRemove', { uniqueId: socket.id, numOfIcon: io.sockets.sockets.length});
+		socket.broadcast.emit('emit_from_server_iconRemove', { socketId: socket.id, numOfIcon: io.sockets.sockets.length});
 		
 	});
 });//---end---io.sockets.on('connection'

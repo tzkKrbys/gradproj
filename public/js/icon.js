@@ -1,6 +1,6 @@
 //MyIconクラス------------------------------------------------
 function MyIcon(){
-	this.uniqueId;
+	this.socketId;
 	this.PosX;					// x座標
 	this.PosY;					// y座標
 	this.AddNumX;				// x座標移動加算量
@@ -159,7 +159,7 @@ MyIcon.prototype.mousePosCheck = function (event) {
 //
 ////OtherIconクラス------------------------------------------------
 //function OtherIcon(){
-//	this.uniqueId;
+//	this.socketId;
 //	this.PosX;					// x座標
 //	this.PosY;					// y座標
 //	this.AddNumX;				// x座標移動加算量

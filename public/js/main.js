@@ -14,7 +14,7 @@ var icons = [];//他のicon用配列
 
 var socket;
 
-var myUniqueId;
+//var mysocketId;
 
 
 $(document).ready(function(){
@@ -129,7 +129,7 @@ $(document).ready(function(){
 			console.log(data.numOfIcon);
 		});
 		// クラス生成
-		myIcon.uniqueId = socket.id;
+		myIcon.socketId = socket.id;
 
 		//socket.emit('emit_from_client_join', myIcon);
 
@@ -148,16 +148,16 @@ $(document).ready(function(){
 //			}
 //		});
 		
-		socket.on('emit_from_server_iconRemove', function(data){//{ uniqueId: socket.id, numOfIcon: io.sockets.sockets.length}
+		socket.on('emit_from_server_iconRemove', function(data){//{ socketId: socket.id, numOfIcon: io.sockets.sockets.length}
 			icons.forEach(function(icon, i, icons) {
-				if(icon.uniqueId == data.uniqueId) icons.splice(i, 1);
+				if(icon.socketId == data.socketId) icons.splice(i, 1);
 			});
 			$('#testDiv').html('現在の人数：' + data.numOfIcon);
 		});
 		
 		socket.on('emit_from_server_sendMsg', function(data) {
 			icons.forEach(function(icon, i, icons) {
-				if(icon.uniqueId == data.uniqueId) {
+				if(icon.socketId == data.socketId) {
 					console.log('きてます');
 					icons[i].str = data.str;
 					icons[i].chatShowCount = data.chatShowCount;
@@ -284,7 +284,7 @@ $(document).ready(function(){
 //					console.log(icon);
 //					console.log(i);
 //					console.log(icons);
-//					if (icon.uniqueId == data.uniqueId ) {
+//					if (icon.socketId == data.socketId ) {
 //						icons[i] = MyIcon.fromObject( data, data.PosX, data.PosY );
 //					}
 ////					icons.push(icon);
@@ -320,14 +320,14 @@ $(document).ready(function(){
 		
 		socket.on('emit_from_server_voicePU', function(data) {
 			icons.forEach(function (icon, i, icons) {
-				if(icon.uniqueId == data.uniqueId) {
+				if(icon.socketId == data.socketId) {
 					icons[i].countVoice = data.countVoice;
 				}
 			});
 		});
 		socket.on('emit_from_server_peerCallConnected', function(data) {
 			icons.forEach(function (icon, i, icons) {
-				if(icon.uniqueId == data.uniqueId) {
+				if(icon.socketId == data.socketId) {
 					if(!icons[i].talkingNodesIds.length) {
 						console.log(data);
 						console.log(icons[i].talkingNodesIds);
@@ -335,7 +335,7 @@ $(document).ready(function(){
 						console.log(icons[i].talkingNodesIds);
 					}else{
 						icons[i].talkingNodesIds.forEach(function(id) {
-							if(id != data.uniqueId) return;
+							if(id != data.socketId) return;
 							console.log(data);
 							console.log(icons[i].talkingNodesIds);
 							icons[i].talkingNodesIds.push(data.talkingNodesIds);
@@ -347,12 +347,12 @@ $(document).ready(function(){
 		});
 		socket.on('emit_from_server_peerCallDisconnected', function(data) {
 			icons.forEach(function (icon, i, icons) {
-				if(icon.uniqueId == data.uniqueId) {
+				if(icon.socketId == data.socketId) {
 					if(icons[i].talkingNodesIds.length) {
 						icons[i].talkingNodesIds.forEach(function(id,j,arr) {
 							console.log(id);
 							console.log(data.talkingNodesIds);
-							console.log(data.uniqueId);
+							console.log(data.socketId);
 							console.log(arr);
 							if(id == data.talkingNodesIds) {
 								arr.splice(j,1);
@@ -370,14 +370,14 @@ $(document).ready(function(){
 		function Draw(){
 				
 			if( countFrames % 30 == 0 ) {//30フレーム毎に実行
-				$('#testDiv2>span').html(myIcon.talkingNodes.length);
-				$('#testDiv3>span').html(myIcon.uniqueId);
+				$('#testDiv2').html('myIcon.talkingNodes.length : ' + myIcon.talkingNodes.length);
+				$('#testDiv3').html('myIcon.socketId : ' + myIcon.socketId);
 				if(myIcon.talkingNodes.length){
 					console.log(myIcon.talkingNodes[0]);
-					$('#testDiv4>span').html(myIcon.talkingNodes[0].uniqueId);
+					$('#testDiv4').html('myIcon.talkingNodes[0].socketId : ' + myIcon.talkingNodes[0].socketId);
 					console.log(myIcon.talkingNodes);
 				} else {
-					$('#testDiv4>span').html("");
+					$('#testDiv4').html('myIcon.talkingNodes[0].socketId : ');
 				}
 				if(myIcon && peer && myStream) {
 					if(icons.length > 0) {
@@ -389,28 +389,28 @@ $(document).ready(function(){
 									if(myIcon.talkingNodes.length < 1 && icon.talkingNodes.length < 1){
 										if(myIcon.talkingNodes.length) {
 											myIcon.talkingNodes.forEach(function(node, i, arr) {
-												if(node.uniqueId != icon.uniqueId) {
+												if(node.socketId != icon.socketId) {
 													return;
 												} else {//接続する
 													var call = peer.call(icon.peerId, myStream);
 													call.on('stream', receiveOthersStream);
-													myIcon.talkingNodes.push({uniqueId: icon.uniqueId, call: call });
-													socket.emit('emit_from_client_peerCallConnected', icon.uniqueId);
+													myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
+													socket.emit('emit_from_client_peerCallConnected', icon.socketId);
 												}
 											});
 										} else {//接続する
 											var call = peer.call(icon.peerId, myStream);
 											call.on('stream', receiveOthersStream);
-											myIcon.talkingNodes.push({uniqueId: icon.uniqueId, call: call });
-											socket.emit('emit_from_client_peerCallConnected', icon.uniqueId);
+											myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
+											socket.emit('emit_from_client_peerCallConnected', icon.socketId);
 										}
 									}
 								}else{
 									myIcon.talkingNodes.forEach(function(node, i, arr) {
-										if(node.uniqueId == icon.uniqueId) {//切断する
+										if(node.socketId == icon.socketId) {//切断する
 											node.call.close();
 											arr.splice(i,1);
-											socket.emit('emit_from_client_peerCallDisconnected', icon.uniqueId);
+											socket.emit('emit_from_client_peerCallDisconnected', icon.socketId);
 										}
 									});
 								}
@@ -476,7 +476,7 @@ $(document).ready(function(){
 
 		socket.on('emit_from_server_iconPosChanged', function(data) {
 			icons.forEach(function(icon, i, icons) {
-				if(icon.uniqueId == data.uniqueId) {
+				if(icon.socketId == data.socketId) {
 					icons[i].PosX = data.PosX;
 					icons[i].PosY = data.PosY;
 				}
