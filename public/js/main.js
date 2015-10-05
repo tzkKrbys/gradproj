@@ -114,7 +114,7 @@ $(document).ready(function(){
 	
 	
 	myIcon = new MyIcon();		// クラス
-	myIcon.Init( canvasWidth/2, canvasHeight/2 ); //初期化メソッド実行(初期の位置を引数に渡してcanvas要素中央に配置)//
+	myIcon.Init( Math.floor( Math.random() * canvasWidth), Math.floor( Math.random() * canvasHeight) ); //初期化メソッド実行(初期の位置を引数に渡してcanvas要素中央に配置)//
 
 
 
