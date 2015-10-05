@@ -81,7 +81,14 @@ console.log(peer);
 
 var receiveOthersStream = function (stream) { //相手の動画を表示する為の
 	console.log(stream);
-	$('#video').prop('src', URL.createObjectURL(stream));
+	console.log(myIcon.talkingNodes.length);
+//	$('#video').prop('src', URL.createObjectURL(stream));
+	$('body').prepend($('<video></video>', {
+		'class': 'videoWindow',
+		src: URL.createObjectURL(stream),
+		autoplay: true
+	}));
+	
 
 //	mediastreamsource = audioContext.createMediaStreamSource(stream);
 //	mediastreamsource.connect(lowpassfilter);
@@ -89,6 +96,7 @@ var receiveOthersStream = function (stream) { //相手の動画を表示する�
 //	audioElement.src = webkitURL.createObjectURL(mediastreamdestination.stream);
 //	audioElement.play();
 };
+
 
 peer.on('open', function () {
 	myIcon.peerId = peer.id;
@@ -128,31 +136,17 @@ peer.on('open', function () {
 //	});
 //}
 
-	peer.on('call', function (call) {//リモートのpeerがあなたに発信してきたときに発生します。mediaConnectionはこの時点でアクティブではありません。つまり、最初に応答する必要があります
-		call.answer(myStream);//イベントを受信した場合に、応答するためにコールバックにて与えられるmediaconnectionにて.answerを呼び出せます。また、オプションで自身のmedia streamを設定できます。
-		call.on('stream', receiveOthersStream);//リモートのpeerがstreamを追加したときに発生します。
+peer.on('call', function (call) {//仮引数callはmediaConnection。リモートのpeerがあなたに発信してきたときに発生します。mediaConnectionはこの時点でアクティブではありません。つまり、最初に応答する必要があります
+	console.log(call);
+	call.answer(myStream);//イベントを受信した場合に、応答するためにコールバックにて与えられるmediaconnectionにて.answerを呼び出せます。また、オプションで自身のmedia streamを設定できます。
+	call.on('stream', receiveOthersStream);//リモートのpeerがstreamを追加したときに発生します。
+//	call.on('stream', function () {
+//		receiveOthersStream();
+//	});//リモートのpeerがstreamを追加したときに発生します。
 });
 //
 //peer.on('error', function (e) {
 //	console.log(e.message);
 //});
 
-$(function () {
 
-//	navigator.getUserMedia({
-//		audio: true,
-//		video: false
-//	},
-////	setMyStream,
-//	setMyStream,
-//	function (err) {
-//		console.log(err);
-//	});
-//	console.log(peer.connections);
-//	$('#call').on('click', function () {
-//		var call = peer.call($('#others-peer-id').val(), myStream);
-//		console.log(call);
-//		call.on('stream', setOthersStream);
-//	});
-
-});

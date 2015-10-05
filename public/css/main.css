@@ -71,6 +71,10 @@ h1{
 	background-color: #aaf;
 }
 
+video {
+	display: none;
+}
+
 #test {
 	color: #fff;
 	position: fixed;
