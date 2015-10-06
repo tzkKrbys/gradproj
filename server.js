@@ -82,7 +82,7 @@ io.sockets.on('connection', function (socket) {
 	
 	//io.sockets.socketsは配列になっている
 	socket.emit('emit_fron_server_sendIcons', {icons: io.sockets.sockets.map(function(e) {
-		return e.icon;
+		return e.icon;//配列が生成される
 	}), numOfIcon: io.sockets.sockets.length});
 
 

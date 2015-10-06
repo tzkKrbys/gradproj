@@ -79,12 +79,13 @@ console.log(peer);
 //	console.log(myStream);
 //};
 
-var receiveOthersStream = function (stream) { //相手の動画を表示する為の
+var receiveOthersStream = function (stream, mediaConnection) { //相手の動画を表示する為の
 	console.log(stream);
-	console.log(myIcon.talkingNodes.length);
+	console.log(mediaConnection);
 //	$('#video').prop('src', URL.createObjectURL(stream));
-	$('body').prepend($('<video></video>', {
+	$('div#videoElems').prepend($('<video></video>', {
 		'class': 'videoWindow',
+		'data-peer': mediaConnection.peer,//mediaConnection.peerを持たせる
 		src: URL.createObjectURL(stream),
 		autoplay: true
 	}));
@@ -139,10 +140,12 @@ peer.on('open', function () {
 peer.on('call', function (call) {//仮引数callはmediaConnection。リモートのpeerがあなたに発信してきたときに発生します。mediaConnectionはこの時点でアクティブではありません。つまり、最初に応答する必要があります
 	console.log(call);
 	call.answer(myStream);//イベントを受信した場合に、応答するためにコールバックにて与えられるmediaconnectionにて.answerを呼び出せます。また、オプションで自身のmedia streamを設定できます。
-	call.on('stream', receiveOthersStream);//リモートのpeerがstreamを追加したときに発生します。
-//	call.on('stream', function () {
-//		receiveOthersStream();
-//	});//リモートのpeerがstreamを追加したときに発生します。
+//	call.on('stream', receiveOthersStream);//リモートのpeerがstreamを追加したときに発生します。
+	call.on('stream', function (stream) {
+		console.log(stream);
+		console.log(this);
+		receiveOthersStream(stream, this);
+	});//リモートのpeerがstreamを追加したときに発生します。
 });
 //
 //peer.on('error', function (e) {

@@ -120,10 +120,12 @@ $(document).ready(function(){
 
 //-------------------------------------------socket.io---//
 	socket.on('connect', function() {
-		socket.on('emit_fron_server_sendIcons', function(data){
+		socket.on('emit_fron_server_sendIcons', function(data){//dataは{icons:[], numOgIcon: io.sockets.sockets.length}
 			data.icons.forEach(function(icon) {
 				if (!icon) return;
-				icons.push(MyIcon.fromObject( icon,canvasWidth/2, canvasHeight/2 ));
+				console.log(icon);
+//				icons.push(MyIcon.fromObject( icon,canvasWidth/2, canvasHeight/2 ));
+				icons.push(MyIcon.fromObject( icon, icon.PosX, icon.PosY ));
 			});
 			$('#testDiv').html('現在の人数：' + data.numOfIcon);
 			console.log(data.numOfIcon);
@@ -204,6 +206,17 @@ $(document).ready(function(){
 			myIcon.endDrag();
 		}
 	};
+	
+	
+//	if (myIcon.talkingNodes.length) {
+//		console.log('ほうほう');
+//		myIcon.talkingNodes.forEach(function (node) {
+//			node.call.on('close', function() {
+//				alert();
+//			});
+//		});
+//	};
+
 
 	//レンダリング関数-----------------------------------------------------
 	window.requestNextAnimationFrame = (function () {
@@ -261,6 +274,8 @@ $(document).ready(function(){
 	var PosX;
 	var PosY;
 	var countFrames = 0;
+	
+//	var peersArr = [];
 
 	function positionChange() {
 		if(myIcon) {
@@ -353,6 +368,24 @@ $(document).ready(function(){
 			});
 		});
 		
+		
+		function callAndAddEvent(icon){
+			var call = peer.call(icon.peerId, myStream);
+			call.on('close', function() {//callが終了したら
+				$('video').each(function (i, element) {//videoタグをサーチ
+					console.log(call.peer);
+					console.log($(element).attr('data-peer'));
+					if ($(element).attr("data-peer") == call.peer) {//もしこのタグのdata-peer属性値とpeerが同じなら
+						$(element).remove();//タグを左k女
+						console.log('削除！');
+					}
+				});
+			});
+			myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
+			socket.emit('emit_from_client_peerCallConnected', icon.socketId);
+		}
+		
+		
 		//	Draw
 		//	描画
 
@@ -385,38 +418,27 @@ $(document).ready(function(){
 													} else {//話している人でなければ
 														//接続する
 														console.log(1111);
-														var call = peer.call(icon.peerId, myStream);
-//														call.on('stream', receiveOthersStream);
-														myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
-														socket.emit('emit_from_client_peerCallConnected', icon.socketId);
+														callAndAddEvent(icon);//callしてイベント設置
 													}
 												});
 											} else {//myIconが誰かと話してなければ
 												//接続する
 												console.log(2222);
-												var call = peer.call(icon.peerId, myStream);
-												console.log(icon.peerId);
-//												call.on('stream', receiveOthersStream);
-												myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
-												socket.emit('emit_from_client_peerCallConnected', icon.socketId);
+												callAndAddEvent(icon);//callしてイベント設置
 											}
 										}
-									} else if (icon.talkingNodesSocketIds.length > 1) {//iconが話せない場合
+									} else if (icon.talkingNodesSocketIds.length >= 2) {//iconが話せない場合
 										if(myIcon.talkingNodes.length < 2){//myIconが話せる場合
 											if ( icon.talkingNodesSocketIds == myIcon.socketId ) {
 												console.log('相手は話せます');
 												//接続する
 												console.log(3333);
-												var call = peer.call(icon.peerId, myStream);
-//												call.on('stream', receiveOthersStream);
-												myIcon.talkingNodes.push({socketId: icon.socketId, call: call });
-												socket.emit('emit_from_client_peerCallConnected', icon.socketId);
+												callAndAddEvent(icon);//callしてイベント設置
 											} else {
 												console.log('相手は話せません');
 											}
 										}
 									}
-									console.log(myIcon.talkingNodes);
 								} else {//一定距離以外なら
 									if (myIcon.talkingNodes.length != 0) {
 										myIcon.talkingNodes.forEach(function(talkingNode, i, arr) {
@@ -428,6 +450,9 @@ $(document).ready(function(){
 //												});
 												arr.splice(i,1);
 												socket.emit('emit_from_client_peerCallDisconnected', icon.socketId);
+//												$('video').each(function (i, element) {
+//													console.log($(this).attr("data-peer") == );
+//												});
 											}
 										});
 									}
