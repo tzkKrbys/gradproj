@@ -368,7 +368,7 @@ $(document).ready(function(){
 			});
 		});
 		
-		
+	
 		function callAndAddEvent(icon){
 			var call = peer.call(icon.peerId, myStream);
 			call.on('close', function() {//callが終了したら
