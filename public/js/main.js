@@ -137,7 +137,8 @@ $(document).ready(function(){
 
 		socket.on('emit_from_server_join', function(data) {
 			console.log(data);
-			icons.push(MyIcon.fromObject( data.icon, canvasWidth/2, canvasHeight/2  ));
+//			icons.push(MyIcon.fromObject( data.icon, canvasWidth/2, canvasHeight/2  ));
+			icons.push(MyIcon.fromObject( data.icon, data.icon.PosX, data.icon.PosY ));
 			$('#testDiv').html('現在の人数：' + data.numOfIcon);
 			console.log(data.numOfIcon);
 		});
@@ -274,7 +275,7 @@ $(document).ready(function(){
 	var PosX;
 	var PosY;
 	var countFrames = 0;
-	
+	var capacityOfVoiceChat = 3;
 //	var peersArr = [];
 
 	function positionChange() {
@@ -409,8 +410,8 @@ $(document).ready(function(){
 								var diffY = icon.PosY - myIcon.PosY;
 								if((diffX * diffX) + (diffY * diffY) < 140 * 140){//一定距離以内なら
 //									console.log(icon.talkingNodesSocketIds);
-									if(icon.talkingNodesSocketIds.length < 2){//iconが話せる
-										if(myIcon.talkingNodes.length < 2){//myIconが話せる
+									if(icon.talkingNodesSocketIds.length < capacityOfVoiceChat){//iconが話せる
+										if(myIcon.talkingNodes.length < capacityOfVoiceChat){//myIconが話せる
 											if(myIcon.talkingNodes.length) {//myIcon誰かと話してたら
 												myIcon.talkingNodes.forEach(function(talkingNode, i, arr) {
 													if(talkingNode.socketId == icon.socketId) {//話しているのがその相手だったら
@@ -427,8 +428,8 @@ $(document).ready(function(){
 												callAndAddEvent(icon);//callしてイベント設置
 											}
 										}
-									} else if (icon.talkingNodesSocketIds.length >= 2) {//iconが話せない場合
-										if(myIcon.talkingNodes.length < 2){//myIconが話せる場合
+									} else if (icon.talkingNodesSocketIds.length >= capacityOfVoiceChat) {//iconが話せない場合
+										if(myIcon.talkingNodes.length < capacityOfVoiceChat){//myIconが話せる場合
 											if ( icon.talkingNodesSocketIds == myIcon.socketId ) {
 												console.log('相手は話せます');
 												//接続する
