@@ -71,7 +71,6 @@ server.listen(port, function () {
 	console.log("Server listening on port 3000.");
 });
 
-
 var io = socketio.listen(server);
 var icons = [];
 var ids = [];
