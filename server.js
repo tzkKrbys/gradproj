@@ -122,7 +122,6 @@ io.sockets.on('connection', function (socket) {
 		console.log(data);
 	});
 
-
 	socket.on('emit_from_client_iconPosChanged', function(data) {
 		socket.icon.PosX = data.PosX;
 		socket.icon.PosY = data.PosY;
